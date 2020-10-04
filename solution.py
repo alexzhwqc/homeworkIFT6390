@@ -360,16 +360,7 @@ for j, sigma in enumerate(arr_sigma):
 print(hp_error_rate)
 print(sp_error_rate)
 
-import matplotlib.pyplot as plt
 
-#draw a single plot with two lines
-plt.plot(arr_h, hp_error_rate, label='Hard_Parzen_error_rate')
-plt.plot(arr_h, sp_error_rate, label='Soft_Parzen_error_rate')
-plt.xlabel("h value or sigma value")
-plt.ylabel('error rate')
-plt.title("Compare the error_rate between Hard_Parzen and Soft_Parzen")
-plt.legend()
-plt.show()
 
 
 def random_projections(X, A):
