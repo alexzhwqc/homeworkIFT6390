@@ -162,6 +162,25 @@ def split_dataset(banknote):
     label_list = np.unique(banknote[:, -1])
     n_classes = len(np.unique(banknote[:, -1]))
 
+    data_set  = banknote[:, :-1]
+    label_set = banknote[:, -1]
+
+    # sperate the indexes into three different sets
+    train_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 0 or i % 5 == 1 or i % 5 == 2]
+    valid_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 3]
+    test_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 4]
+
+    # by the indexes of three sets, copy data into their sets
+    train_data = data_set[train_indexes]
+    valid_data = data_set[valid_indexes]
+    test_data = data_set[test_indexes]
+
+    # draw out the labels from train_set, valid_set and test_set.
+    train_labels = label_set[train_indexes].astype('int32')
+    valid_labels = label_set[valid_indexes].astype('int32')
+    test_labels  = label_set[test_indexes].astype('int32')
+
+    '''     
     # sperate the indexes into three different sets
     train_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 0 or i % 5 == 1 or i % 5 == 2]
     valid_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 3]
@@ -181,6 +200,7 @@ def split_dataset(banknote):
     train_data = train_set[:, :-1]
     valid_data = valid_set[:, :-1]
     test_data = test_set[:, :-1]
+    '''
 
     return train_data, train_labels, valid_data, valid_labels, test_data, test_labels, label_list, n_classes
 
