@@ -1,11 +1,64 @@
 import math
 import numpy as np
-#from keras.utils import to_categorical
 
 def indices_to_one_hot(data, nb_classes):
     #Convert an iterable of indices to one-hot encoded labels
     targets = np.array(data).reshape(-1)
     return np.eye(nb_classes)[targets]
+
+# import the data
+banknote = np.genfromtxt('data_banknote_authentication.txt', delimiter=',')
+
+#print(label_list)
+print('banknote.shape = ',banknote.shape)
+
+def split_dataset(banknote):
+
+    data_set  = banknote[:, :-1]
+    label_set = banknote[:, -1]
+
+    # sperate the indexes into three different sets
+    train_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 0 or i % 5 == 1 or i % 5 == 2]
+    valid_indexes = [j for j in range(banknote.shape[0]) if j % 5 == 3]
+    test_indexes = [k for k in range(banknote.shape[0]) if k % 5 == 4]
+
+    # by the indexes of three sets, copy data into their sets
+    train_data = data_set[train_indexes]
+    valid_data = data_set[valid_indexes]
+    test_data = data_set[test_indexes]
+
+    # draw out the labels from train_set, valid_set and test_set.
+    train_labels = label_set[train_indexes].astype('int32')
+    valid_labels = label_set[valid_indexes].astype('int32')
+    test_labels  = label_set[test_indexes].astype('int32')
+
+    '''     
+    # sperate the indexes into three different sets
+    train_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 0 or i % 5 == 1 or i % 5 == 2]
+    valid_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 3]
+    test_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 4]
+
+    # by the indexes of three sets, copy data into their sets
+    train_set = banknote[train_indexes, :]
+    valid_set = banknote[valid_indexes, :]
+    test_set = banknote[test_indexes, :]
+
+    # draw out the labels from train_set, valid_set and test_set.
+    train_labels = train_set[:, -1].astype('int32')
+    valid_labels = valid_set[:, -1].astype('int32')
+    test_labels = test_set[:, -1].astype('int32')
+
+    # draw out the feature from train_set, valid_set and test_set
+    train_data = train_set[:, :-1]
+    valid_data = valid_set[:, :-1]
+    test_data = test_set[:, :-1]
+    '''
+    #return train_data, train_labels, valid_data, valid_labels, test_data, test_labels, label_list, n_classes
+    return train_data, train_labels, valid_data, valid_labels, test_data, test_labels
+
+
+train_data, train_labels, valid_data, valid_labels, test_data, test_labels = split_dataset(banknote)
+
 
 ######## DO NOT MODIFY THIS FUNCTION ########
 def draw_rand_label(x, label_list):
@@ -19,6 +72,10 @@ def draw_rand_label(x, label_list):
 
 def minkowski_mat(x, Y, p=2):
     return (np.sum((np.abs(x - Y)) ** p, axis=1)) ** (1.0 / p)
+
+# distances = minkowski_mat(valid_data[0], train_data)
+# print('distances.shape = ', distances.shape)
+# print('distances = ', distances)
 
 class Q1:
 
@@ -48,21 +105,36 @@ class Q1:
         cCovMatrix = np.cov(banknote[ind_class1, :-1], rowvar=False)
         return cCovMatrix
 
+# compute the error rate
+def confusion_matrix(true_labels, pred_labels):
+
+    n_true_classes = len(np.unique(true_labels))
+    n_pred_classes = len(np.unique(pred_labels))
+    matrix = np.zeros((n_true_classes, n_pred_classes))
+
+    for (true, pred) in zip(true_labels, pred_labels):
+        matrix[int(true - 1), int(pred - 1)] += 1
+
+    sum_preds = np.sum(matrix)
+    sum_correct = np.sum(np.diag(matrix))
+
+    return 1.0 - float(sum_correct) / float(sum_preds)
+
+
 class HardParzen:
     def __init__(self, h):
         self.h = h  # h is the threshold distance, h is a positive real.
 
     def train(self, train_inputs, train_labels):
-
         self.train_inputs = train_inputs
         self.train_labels = train_labels
-        self.label_list = np.unique(train_labels)  # the elements of self.label_list are monotonically increasing
+        self.label_list = np.unique(train_labels)
         self.n_classes = len(self.label_list)
 
     def compute_predictions(self, test_data):
 
         #pred_test_labels = np.zeros((test_data.shape[0]), dtype=int)
-        pred_test_labels = np.zeros((274), dtype=int)
+        pred_test_labels = np.zeros((len(test_data)), dtype=int)
 
         # For each test datapoint
         for (i, ex) in enumerate(test_data):
@@ -94,6 +166,16 @@ class HardParzen:
 
         pred_test_labels_int = pred_test_labels.astype(int)
         return pred_test_labels_int
+
+'''
+# test HardParzen's function
+train_data, train_labels, valid_data, valid_labels, test_data, test_labels = split_dataset(banknote)
+cl_hardparzen  = HardParzen(3.0)
+cl_hardparzen.train(train_data,train_labels)
+pre_valid_hp   = cl_hardparzen.compute_predictions(valid_data)
+pre_error_rate = confusion_matrix(valid_labels, pre_valid_hp)
+print('pre_error_rate = ', pre_error_rate)
+'''
 
 class SoftRBFParzen:
     def __init__(self, sigma):
@@ -156,73 +238,14 @@ class SoftRBFParzen:
 
         return classes_pred
 
-
-def split_dataset(banknote):
-
-    label_list = np.unique(banknote[:, -1])
-    n_classes = len(np.unique(banknote[:, -1]))
-
-    data_set  = banknote[:, :-1]
-    label_set = banknote[:, -1]
-
-    # sperate the indexes into three different sets
-    train_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 0 or i % 5 == 1 or i % 5 == 2]
-    valid_indexes = [j for j in range(banknote.shape[0]) if j % 5 == 3]
-    test_indexes = [k for k in range(banknote.shape[0]) if k % 5 == 4]
-
-    # by the indexes of three sets, copy data into their sets
-    train_data = data_set[train_indexes]
-    valid_data = data_set[valid_indexes]
-    test_data = data_set[test_indexes]
-
-    # draw out the labels from train_set, valid_set and test_set.
-    train_labels = label_set[train_indexes].astype('int32')
-    valid_labels = label_set[valid_indexes].astype('int32')
-    test_labels  = label_set[test_indexes].astype('int32')
-
-    '''     
-    # sperate the indexes into three different sets
-    train_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 0 or i % 5 == 1 or i % 5 == 2]
-    valid_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 3]
-    test_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 4]
-
-    # by the indexes of three sets, copy data into their sets
-    train_set = banknote[train_indexes, :]
-    valid_set = banknote[valid_indexes, :]
-    test_set = banknote[test_indexes, :]
-
-    # draw out the labels from train_set, valid_set and test_set.
-    train_labels = train_set[:, -1].astype('int32')
-    valid_labels = valid_set[:, -1].astype('int32')
-    test_labels = test_set[:, -1].astype('int32')
-
-    # draw out the feature from train_set, valid_set and test_set
-    train_data = train_set[:, :-1]
-    valid_data = valid_set[:, :-1]
-    test_data = test_set[:, :-1]
-    '''
-
-    return train_data, train_labels, valid_data, valid_labels, test_data, test_labels, label_list, n_classes
-
-
-def confusion_matrix(true_labels, pred_labels):
-    n_true_classes = len(np.unique(true_labels))
-    n_pred_classes = len(np.unique(pred_labels))
-    matrix = np.zeros((n_true_classes, n_pred_classes))
-
-    for (true, pred) in zip(true_labels, pred_labels):
-        matrix[int(true - 1), int(pred - 1)] += 1
-
-    return matrix
-
-
-def comput_test_error(conf_mat):
-    # compute test_error from n by n comfusion_matrix
-    sum_preds = np.sum(conf_mat)
-    sum_correct = np.sum(np.diag(conf_mat))
-
-    return 1.0 - float(sum_correct) / float(sum_preds)
-
+'''
+train_data, train_labels, valid_data, valid_labels, test_data, test_labels = split_dataset(banknote)
+cl_softparzen  = SoftRBFParzen(0.9)
+cl_softparzen.train(train_data,train_labels)
+pre_valid_sp   = cl_softparzen.compute_predictions(valid_data)
+pre_err_rat_sp = confusion_matrix(valid_labels, pre_valid_sp)
+print('pre_err_rat_sp = ', pre_err_rat_sp)
+'''
 
 class ErrorRate:
     def __init__(self, x_train, y_train, x_val, y_val):
@@ -238,23 +261,27 @@ class ErrorRate:
         x_hard_parzen = HardParzen(self.h)
         x_hard_parzen.train(self.x_train, self.x_val)
         y_pred_test_labels = x_hard_parzen.compute_predictions(self.y_train)
-        y_confusion_matrix = confusion_matrix(self.y_val, y_pred_test_labels)
-        y_error_rate = comput_test_error(y_confusion_matrix)
+        y_error_rate = confusion_matrix(self.y_val, y_pred_test_labels)
 
         #y_hard_parzen = HardParzen(self.h)
         #y_hard_parzen.train(self.y_train, self.y_val)
         #x_pred_test_labels = y_hard_parzen.compute_predictions(self.x_train)
         #x_confusion_matrix = confusion_matrix(self.x_val, x_pred_test_labels)
         #x_error_rate = comput_test_error(x_confusion_matrix)
-        return y_error_rate, y_error_rate
+
+        return y_error_rate
 
     def soft_parzen(self, sigma):
         self.sigma_sq = sigma ** 2
         x_soft_RBFParzen = SoftRBFParzen(self.sigma_sq)
         x_soft_RBFParzen.train(self.x_train, self.x_val)
         y_pred_test_labels = x_soft_RBFParzen.compute_predictions(self.y_train)
+        y_error_rate = confusion_matrix(self.y_val, y_pred_test_labels)
+
+        '''
         y_confusion_matrix = confusion_matrix(self.y_val, y_pred_test_labels)
         y_error_rate = comput_test_error(y_confusion_matrix)
+        '''
 
         #y_soft_RBFParzen = SoftRBFParzen(self.sigma_sq)
         #y_soft_RBFParzen.train(self.y_train, self.y_val)
@@ -262,20 +289,27 @@ class ErrorRate:
         #x_confusion_matrix = confusion_matrix(self.x_val, x_pred_test_labels)
         #x_error_rate = comput_test_error(x_confusion_matrix)
 
-        return y_error_rate, y_error_rate
+        return y_error_rate
+
+'''
+train_data, train_labels, valid_data, valid_labels, test_data, test_labels = split_dataset(banknote)
+cl_error_rate    = ErrorRate(train_data,valid_data,train_labels,valid_labels)
+hp_cl_error_rate = cl_error_rate.hard_parzen(3.0)
+sp_cl_error_rate = cl_error_rate.soft_parzen(1.0)
+print('hp_cl_error_rate = ', hp_cl_error_rate)
+print('sp_cl_error_rate = ', sp_cl_error_rate)
+'''
 
 
 def get_test_errors(banknote):
-    train_data, train_labels, valid_data, valid_labels, test_data, test_labels, label_list, n_classes = split_dataset(
-        banknote)
+    train_data, train_labels, valid_data, valid_labels, test_data, test_labels = split_dataset(banknote)
     # the value star_h is the one (among the proposed set in question 5)
     # that results in the smallest validation error for Parzen with hard window
     star_h = 3.0
     x_hard_parzen = HardParzen(star_h)
     x_hard_parzen.train(train_data, train_labels)
     y_hp_pred_test_lab = x_hard_parzen.compute_predictions(test_data)
-    y_hp_conf_matrix = confusion_matrix(test_labels, y_hp_pred_test_lab)
-    y__hp_error_rate = comput_test_error(y_hp_conf_matrix)
+    y__hp_error_rate = confusion_matrix(test_labels, y_hp_pred_test_lab)
 
     star_sigma = 0.5
     star_sigma_sq = star_sigma ** 2
@@ -284,8 +318,7 @@ def get_test_errors(banknote):
     x_soft_RBFParzen = SoftRBFParzen(star_sigma_sq)
     x_soft_RBFParzen.train(train_data, train_labels)
     y_soft_pred_test_lab = x_soft_RBFParzen.compute_predictions(test_data)
-    y_soft_conf_matrix = confusion_matrix(test_labels, y_soft_pred_test_lab)
-    y_soft_error_rate = comput_test_error(y_soft_conf_matrix)
+    y_soft_error_rate = confusion_matrix(test_labels, y_soft_pred_test_lab)
 
     # expected output is an array of size 2,
     # the first value being the error rate on the test set of Hard Parzen with parameter ℎ*
@@ -295,6 +328,7 @@ def get_test_errors(banknote):
 
     return hp_sp_error_rate
 
+#print('hp_sp_error_rate = ', get_test_errors(banknote))
 
 def random_projections(X, A):
     proj_X = np.dot(X, A) / math.sqrt(2)
