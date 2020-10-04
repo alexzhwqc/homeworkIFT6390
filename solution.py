@@ -184,7 +184,9 @@ def split_dataset(banknote):
 
 
 def confusion_matrix(true_labels, pred_labels):
-    matrix = np.zeros((n_classes, n_classes))
+    n_true_classes = len(np.unique(true_labels))
+    n_pred_classes = len(np.unique(pred_labels))
+    matrix = np.zeros((n_true_classes, n_pred_classes))
 
     for (true, pred) in zip(true_labels, pred_labels):
         matrix[int(true - 1), int(pred - 1)] += 1
