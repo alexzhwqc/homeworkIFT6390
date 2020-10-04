@@ -1,18 +1,5 @@
-import numpy as np
-import random
-import matplotlib
-import matplotlib.pyplot as plt
-import time
-import sys
-from numpy import argmax
-from keras.utils import to_categorical
 import math
-
-# FOR VISUALIZATION
-from ipywidgets import interact, SelectMultiple, fixed, Checkbox, IntRangeSlider, IntSlider, FloatSlider
-import ipywidgets as widgets
-matplotlib.rcParams['figure.figsize'] = [10,5]
-plt.style.use('fivethirtyeight')
+import numpy as np
 
 banknote = np.genfromtxt('https://code.datasciencedojo.com/datasciencedojo/datasets/blob/master/Banknote%20Authentication/data_banknote_authentication.txt', delimiter=',')
 label_list = np.unique(banknote[:,-1])
