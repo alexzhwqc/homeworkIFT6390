@@ -73,7 +73,6 @@ class HardParzen:
             distances = minkowski_mat(ex, self.train_inputs, p=2)
             # find the neighbour index with distance less than self.h
             neighbour_index = [j for j in range(len(distances)) if distances[j] < self.h]
-            neighbour_index = int(neighbour_index)
 
             if len(neighbour_index) == 0:
                 k = draw_rand_label(ex, self.label_list)  # k = a random class for ex
