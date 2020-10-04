@@ -1,10 +1,6 @@
 import math
 import numpy as np
 
-banknote = np.genfromtxt('https://code.datasciencedojo.com/datasciencedojo/datasets/blob/master/Banknote%20Authentication/data_banknote_authentication.txt', delimiter=',')
-label_list = np.unique(banknote[:,-1])
-n_classes  = len(label_list)
-
 ######## DO NOT MODIFY THIS FUNCTION ########
 def draw_rand_label(x, label_list):
     seed = abs(np.sum(x))
