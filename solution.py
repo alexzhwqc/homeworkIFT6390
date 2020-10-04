@@ -167,8 +167,8 @@ def split_dataset(banknote):
 
     # sperate the indexes into three different sets
     train_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 0 or i % 5 == 1 or i % 5 == 2]
-    valid_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 3]
-    test_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 4]
+    valid_indexes = [j for j in range(banknote.shape[0]) if j % 5 == 3]
+    test_indexes = [k for k in range(banknote.shape[0]) if k % 5 == 4]
 
     # by the indexes of three sets, copy data into their sets
     train_data = data_set[train_indexes]
