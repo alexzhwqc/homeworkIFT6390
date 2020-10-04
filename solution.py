@@ -1,4 +1,22 @@
 import numpy as np
+import random
+import matplotlib
+import matplotlib.pyplot as plt
+import time
+import sys
+from numpy import argmax
+from keras.utils import to_categorical
+import math
+
+# FOR VISUALIZATION
+from ipywidgets import interact, SelectMultiple, fixed, Checkbox, IntRangeSlider, IntSlider, FloatSlider
+import ipywidgets as widgets
+matplotlib.rcParams['figure.figsize'] = [10,5]
+plt.style.use('fivethirtyeight')
+
+banknote = np.genfromtxt('https://code.datasciencedojo.com/datasciencedojo/datasets/blob/master/Banknote%20Authentication/data_banknote_authentication.txt', delimiter=',')
+label_list = np.unique(banknote[:,-1])
+n_classes  = len(label_list)
 
 ######## DO NOT MODIFY THIS FUNCTION ########
 def draw_rand_label(x, label_list):
@@ -44,13 +62,12 @@ class Q1:
 class HardParzen:
     def __init__(self, h):
         self.h = h  # h is the threshold distance, h is a positive real.
-        self.dist_func = minkowski_mat
 
     def train(self, train_inputs, train_labels):
-        # self.label_list = np.unique(train_labels)
+
         self.train_inputs = train_inputs
         self.train_labels = train_labels
-        self.label_list = np.unique(data[:, -1])  # the elements of self.label_list are monotonically increasing
+        self.label_list = np.unique(train_labels)  # the elements of self.label_list are monotonically increasing
         self.n_classes = len(self.label_list)
 
     def compute_predictions(self, test_data):
@@ -99,7 +116,7 @@ class SoftRBFParzen:
         self.train_inputs = train_inputs
         self.train_labels = train_labels
 
-        self.label_list = np.unique(data[:, -1])
+        self.label_list = np.unique(train_labels)
         self.n_classes = len(self.label_list)
 
         # onehot_train_lables is for predicting the class of test
@@ -131,7 +148,6 @@ class SoftRBFParzen:
             counts = np.zeros_like(self.onehot_train_lables, dtype=float)  #
 
             # Find the distances to each training set point using dist_func
-            # distances = self.dist_func(ex, self.train_inputs)
             distances = minkowski_mat(ex, self.train_inputs, p=2)
 
             total_kernel = 0.0
@@ -151,19 +167,19 @@ class SoftRBFParzen:
 
 
 def split_dataset(banknote):
-    data = banknote
-    label_list = np.unique(data[:, -1])
-    n_classes = len(np.unique(data[:, -1]))
+    #data = banknote
+    label_list = np.unique(banknote[:, -1])
+    n_classes = len(np.unique(banknote[:, -1]))
 
     # sperate the indexes into three different sets
-    train_indexes = [i for i in range(data.shape[0]) if i % 5 == 0 or i % 5 == 1 or i % 5 == 2]
-    valid_indexes = [i for i in range(data.shape[0]) if i % 5 == 3]
-    test_indexes = [i for i in range(data.shape[0]) if i % 5 == 4]
+    train_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 0 or i % 5 == 1 or i % 5 == 2]
+    valid_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 3]
+    test_indexes = [i for i in range(banknote.shape[0]) if i % 5 == 4]
 
     # by the indexes of three sets, copy data into their sets
-    train_set = data[train_indexes, :]
-    valid_set = data[valid_indexes, :]
-    test_set = data[test_indexes, :]
+    train_set = banknote[train_indexes, :]
+    valid_set = banknote[valid_indexes, :]
+    test_set = banknote[test_indexes, :]
 
     # draw out the labels from train_set, valid_set and test_set.
     train_labels = train_set[:, -1].astype('int32')
