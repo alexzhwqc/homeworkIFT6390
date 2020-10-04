@@ -173,7 +173,7 @@ class HardParzen:
         pred_test_labels_int = pred_test_labels.astype(int)
         return pred_test_labels_int
 
-
+'''
 # test HardParzen's function
 train_data, train_labels, valid_data, valid_labels, test_data, test_labels = split_dataset(banknote)
 cl_hardparzen  = HardParzen(3.0)
@@ -181,6 +181,8 @@ cl_hardparzen.train(train_data,train_labels)
 pre_valid_hp   = cl_hardparzen.compute_predictions(valid_data)
 pre_error_rate = confusion_matrix(valid_labels, pre_valid_hp)
 print('pre_error_rate = ', pre_error_rate)
+
+'''
 
 
 class SoftRBFParzen:
@@ -333,7 +335,42 @@ def get_test_errors(banknote):
 
     return hp_sp_error_rate
 
-#print('hp_sp_error_rate = ', get_test_errors(banknote))
+
+train_data, train_labels, valid_data, valid_labels, test_data, test_labels = split_dataset(banknote)
+
+arr_h = np.array([0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 1.0, 3.0, 10.0, 20.0])
+arr_sigma = np.array([0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 1.0, 3.0, 10.0, 20.0])
+
+# create a ErrorRate class and initialize it
+error_rate = ErrorRate(train_data, valid_data, train_labels, valid_labels)
+
+hp_error_rate = np.zeros_like(arr_h, dtype=float)
+sp_error_rate = np.zeros_like(arr_sigma, dtype=float)
+
+for i, h in enumerate(arr_h):
+    h = arr_h[i]
+    #hp_val_error_rate, hp_train_error_rate = error_rate.hard_parzen(h)
+    hp_val_error_rate = error_rate.hard_parzen(h)
+    hp_error_rate[i] = hp_val_error_rate
+
+for j, sigma in enumerate(arr_sigma):
+    sp_val_error_rate = error_rate.soft_parzen(sigma)
+    sp_error_rate[j] = sp_val_error_rate
+
+print(hp_error_rate)
+print(sp_error_rate)
+
+import matplotlib.pyplot as plt
+
+#draw a single plot with two lines
+plt.plot(arr_h, hp_error_rate, label='Hard_Parzen_error_rate')
+plt.plot(arr_h, sp_error_rate, label='Soft_Parzen_error_rate')
+plt.xlabel("h value or sigma value")
+plt.ylabel('error rate')
+plt.title("Compare the error_rate between Hard_Parzen and Soft_Parzen")
+plt.legend()
+plt.show()
+
 
 def random_projections(X, A):
     proj_X = np.dot(X, A) / math.sqrt(2)
