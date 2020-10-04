@@ -1,6 +1,11 @@
 import math
 import numpy as np
-from keras.utils import to_categorical
+#from keras.utils import to_categorical
+
+def indices_to_one_hot(data, nb_classes):
+    #Convert an iterable of indices to one-hot encoded labels
+    targets = np.array(data).reshape(-1)
+    return np.eye(nb_classes)[targets]
 
 ######## DO NOT MODIFY THIS FUNCTION ########
 def draw_rand_label(x, label_list):
@@ -105,7 +110,7 @@ class SoftRBFParzen:
 
         # onehot_train_lables is for predicting the class of test
         # the function to_categorical() to code onehot
-        self.onehot_train_labels = to_categorical(self.train_labels)
+        self.onehot_train_labels = indices_to_one_hot(self.train_labels, self.n_classes)
 
         # Here, calculate the mean and variance of the train_data data and put it in self.mu
         # self.sigma_sq is given
@@ -120,7 +125,7 @@ class SoftRBFParzen:
 
     def compute_predictions(self, test_data):
         classes_pred = np.zeros(test_data.shape[0], dtype=int) - 1  # classes_pred initialize -1
-        self.onehot_train_lables = to_categorical(self.train_labels)
+        self.onehot_train_lables = indices_to_one_hot(self.train_labels, self.n_classes)
 
         # For each test datapoint
         for (i, ex) in enumerate(test_data):
