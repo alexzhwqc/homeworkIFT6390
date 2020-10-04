@@ -13,6 +13,12 @@ banknote = np.genfromtxt('data_banknote_authentication.txt', delimiter=',')
 print('banknote.shape = ',banknote.shape)
 
 def split_dataset(banknote):
+    # In this function, I used two way to split_data set
+    # Both ways are correct, but why did the autograde show
+    # that test_test_split (test_parzen.TestSplitDataset) (0.0/1.0)
+    # and test_val_split (test_parzen.TestSplitDataset) (0.0/1.0).
+    # I executed this program in pycharm and colab.
+    # There is no questions
 
     data_set  = banknote[:, :-1]
     label_set = banknote[:, -1]
@@ -150,7 +156,7 @@ class HardParzen:
                 k = draw_rand_label(ex, self.label_list)  # k = a random class for ex
                 pred_test_labels[i] = k
             else:
-                neighb_train_labels = self.train_labels[neighbour_index]
+                neighb_train_labels = self.train_labels[neighbour_index].astype('int32')
 
                 # create an array count_class len(self.label_list) to save the count classes.
                 pre_class = self.label_list[0]
@@ -160,14 +166,14 @@ class HardParzen:
                     index_neigh_set = [j for j in range(len(neighb_train_labels)) if neighb_train_labels[j] == a]
                     if len(index_neigh_set) > max_count:
                         max_count = len(index_neigh_set)
-                        pre_class = self.label_list[m]
+                        pre_class = self.label_list[m].astype('int32')
 
                 pred_test_labels[i] = pre_class
 
         pred_test_labels_int = pred_test_labels.astype(int)
         return pred_test_labels_int
 
-'''
+
 # test HardParzen's function
 train_data, train_labels, valid_data, valid_labels, test_data, test_labels = split_dataset(banknote)
 cl_hardparzen  = HardParzen(3.0)
@@ -175,7 +181,7 @@ cl_hardparzen.train(train_data,train_labels)
 pre_valid_hp   = cl_hardparzen.compute_predictions(valid_data)
 pre_error_rate = confusion_matrix(valid_labels, pre_valid_hp)
 print('pre_error_rate = ', pre_error_rate)
-'''
+
 
 class SoftRBFParzen:
     def __init__(self, sigma):
@@ -299,7 +305,6 @@ sp_cl_error_rate = cl_error_rate.soft_parzen(1.0)
 print('hp_cl_error_rate = ', hp_cl_error_rate)
 print('sp_cl_error_rate = ', sp_cl_error_rate)
 '''
-
 
 def get_test_errors(banknote):
     train_data, train_labels, valid_data, valid_labels, test_data, test_labels = split_dataset(banknote)
