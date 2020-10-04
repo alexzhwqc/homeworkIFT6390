@@ -1,5 +1,6 @@
 import math
 import numpy as np
+from keras.utils import to_categorical
 
 ######## DO NOT MODIFY THIS FUNCTION ########
 def draw_rand_label(x, label_list):
@@ -237,7 +238,7 @@ class ErrorRate:
 
 def get_test_errors(banknote):
     train_data, train_labels, valid_data, valid_labels, test_data, test_labels, label_list, n_classes = split_dataset(
-        data)
+        banknote)
     # the value star_h is the one (among the proposed set in question 5)
     # that results in the smallest validation error for Parzen with hard window
     x_hard_parzen = HardParzen(star_h)
