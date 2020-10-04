@@ -158,7 +158,7 @@ class SoftRBFParzen:
 
 
 def split_dataset(banknote):
-    #data = banknote
+
     label_list = np.unique(banknote[:, -1])
     n_classes = len(np.unique(banknote[:, -1]))
 
@@ -257,7 +257,7 @@ def get_test_errors(banknote):
     y_hp_conf_matrix = confusion_matrix(test_labels, y_hp_pred_test_lab)
     y__hp_error_rate = comput_test_error(y_hp_conf_matrix)
 
-    star_sigma = 0.2
+    star_sigma = 0.5
     star_sigma_sq = star_sigma ** 2
     # σ∗  is the parameter (among the proposed set in question 5)
     # that results in the smallest validation error for Parzen with RBF.
