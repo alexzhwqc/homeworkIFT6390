@@ -217,12 +217,12 @@ class ErrorRate:
         y_confusion_matrix = confusion_matrix(self.y_val, y_pred_test_labels)
         y_error_rate = comput_test_error(y_confusion_matrix)
 
-        y_hard_parzen = HardParzen(self.h)
-        y_hard_parzen.train(self.y_train, self.y_val)
-        x_pred_test_labels = y_hard_parzen.compute_predictions(self.x_train)
-        x_confusion_matrix = confusion_matrix(self.x_val, x_pred_test_labels)
-        x_error_rate = comput_test_error(x_confusion_matrix)
-        return y_error_rate, x_error_rate
+        #y_hard_parzen = HardParzen(self.h)
+        #y_hard_parzen.train(self.y_train, self.y_val)
+        #x_pred_test_labels = y_hard_parzen.compute_predictions(self.x_train)
+        #x_confusion_matrix = confusion_matrix(self.x_val, x_pred_test_labels)
+        #x_error_rate = comput_test_error(x_confusion_matrix)
+        return y_error_rate, y_error_rate
 
     def soft_parzen(self, sigma):
         self.sigma_sq = sigma ** 2
@@ -232,13 +232,13 @@ class ErrorRate:
         y_confusion_matrix = confusion_matrix(self.y_val, y_pred_test_labels)
         y_error_rate = comput_test_error(y_confusion_matrix)
 
-        y_soft_RBFParzen = SoftRBFParzen(self.sigma_sq)
-        y_soft_RBFParzen.train(self.y_train, self.y_val)
-        x_pred_test_labels = y_soft_RBFParzen.compute_predictions(self.x_train)
-        x_confusion_matrix = confusion_matrix(self.x_val, x_pred_test_labels)
-        x_error_rate = comput_test_error(x_confusion_matrix)
+        #y_soft_RBFParzen = SoftRBFParzen(self.sigma_sq)
+        #y_soft_RBFParzen.train(self.y_train, self.y_val)
+        #x_pred_test_labels = y_soft_RBFParzen.compute_predictions(self.x_train)
+        #x_confusion_matrix = confusion_matrix(self.x_val, x_pred_test_labels)
+        #x_error_rate = comput_test_error(x_confusion_matrix)
 
-        return y_error_rate, x_error_rate
+        return y_error_rate, y_error_rate
 
 
 def get_test_errors(banknote):
@@ -246,12 +246,14 @@ def get_test_errors(banknote):
         banknote)
     # the value star_h is the one (among the proposed set in question 5)
     # that results in the smallest validation error for Parzen with hard window
+    star_h = 3.0
     x_hard_parzen = HardParzen(star_h)
     x_hard_parzen.train(train_data, train_labels)
     y_hp_pred_test_lab = x_hard_parzen.compute_predictions(test_data)
     y_hp_conf_matrix = confusion_matrix(test_labels, y_hp_pred_test_lab)
     y__hp_error_rate = comput_test_error(y_hp_conf_matrix)
 
+    star_sigma = 0.1
     star_sigma_sq = star_sigma ** 2
     # σ∗  is the parameter (among the proposed set in question 5)
     # that results in the smallest validation error for Parzen with RBF.
