@@ -335,7 +335,7 @@ def get_test_errors(banknote):
 
     return hp_sp_error_rate
 
-
+'''
 train_data, train_labels, valid_data, valid_labels, test_data, test_labels = split_dataset(banknote)
 
 arr_h = np.array([0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 1.0, 3.0, 10.0, 20.0])
@@ -348,20 +348,16 @@ hp_error_rate = np.zeros_like(arr_h, dtype=float)
 sp_error_rate = np.zeros_like(arr_sigma, dtype=float)
 
 for i, h in enumerate(arr_h):
-    h = arr_h[i]
-    #hp_val_error_rate, hp_train_error_rate = error_rate.hard_parzen(h)
     hp_val_error_rate = error_rate.hard_parzen(h)
     hp_error_rate[i] = hp_val_error_rate
 
 for j, sigma in enumerate(arr_sigma):
     sp_val_error_rate = error_rate.soft_parzen(sigma)
     sp_error_rate[j] = sp_val_error_rate
-
+    
 print(hp_error_rate)
 print(sp_error_rate)
-
-
-
+'''
 
 def random_projections(X, A):
     proj_X = np.dot(X, A) / math.sqrt(2)
