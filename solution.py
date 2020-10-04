@@ -10,6 +10,8 @@ def draw_rand_label(x, label_list):
     return np.random.choice(label_list)
 #############################################
 
+def minkowski_mat(x, Y, p=2):
+    return (np.sum((np.abs(x - Y)) ** p, axis=1)) ** (1.0 / p)
 
 class Q1:
 
