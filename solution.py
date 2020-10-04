@@ -60,7 +60,9 @@ class HardParzen:
         self.n_classes = len(self.label_list)
 
     def compute_predictions(self, test_data):
-        pred_test_labels = np.zeros((test_data.shape[0]))
+
+        #pred_test_labels = np.zeros((test_data.shape[0]), dtype=int)
+        pred_test_labels = np.zeros((274), dtype=int)
 
         # For each test datapoint
         for (i, ex) in enumerate(test_data):
@@ -71,6 +73,7 @@ class HardParzen:
             distances = minkowski_mat(ex, self.train_inputs, p=2)
             # find the neighbour index with distance less than self.h
             neighbour_index = [j for j in range(len(distances)) if distances[j] < self.h]
+            neighbour_index = int(neighbour_index)
 
             if len(neighbour_index) == 0:
                 k = draw_rand_label(ex, self.label_list)  # k = a random class for ex
@@ -255,7 +258,7 @@ def get_test_errors(banknote):
     y_hp_conf_matrix = confusion_matrix(test_labels, y_hp_pred_test_lab)
     y__hp_error_rate = comput_test_error(y_hp_conf_matrix)
 
-    star_sigma = 0.1
+    star_sigma = 0.2
     star_sigma_sq = star_sigma ** 2
     # σ∗  is the parameter (among the proposed set in question 5)
     # that results in the smallest validation error for Parzen with RBF.
